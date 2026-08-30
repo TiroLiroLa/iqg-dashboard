@@ -2,6 +2,12 @@ import dns from 'node:dns/promises';
 import net from 'node:net';
 import type { LinkDiagnostic } from '../shared/types.js';
 
+const REQUEST_TIMEOUT_MS = 10_000;
+const REQUEST_HEADERS = {
+  Accept: 'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
+  'User-Agent': 'IQG-Dashboard-Link-Checker/1.0 (+https://iqg-dashboard.vercel.app)'
+};
+
 function isPrivateIp(address: string): boolean {
   if (address === '::1' || address === '::' || address.startsWith('fe80:') || address.startsWith('fc') || address.startsWith('fd')) return true;
   if (net.isIPv4(address)) {
@@ -21,9 +27,19 @@ async function assertPublic(url: URL): Promise<void> {
 async function request(url: URL, redirects = 0): Promise<Response> {
   if (redirects > 3) throw new Error('Limite de redirecionamentos excedido.');
   await assertPublic(url);
-  let response = await fetch(url, { method: 'HEAD', redirect: 'manual', signal: AbortSignal.timeout(5_000) });
-  if ([405, 501].includes(response.status)) {
-    response = await fetch(url, { method: 'GET', headers: { Range: 'bytes=0-0' }, redirect: 'manual', signal: AbortSignal.timeout(5_000) });
+  let response = await fetch(url, {
+    method: 'HEAD',
+    headers: REQUEST_HEADERS,
+    redirect: 'manual',
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  });
+  if ([403, 405, 501].includes(response.status)) {
+    response = await fetch(url, {
+      method: 'GET',
+      headers: { ...REQUEST_HEADERS, Range: 'bytes=0-0' },
+      redirect: 'manual',
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+    });
   }
   if (response.status >= 300 && response.status < 400) {
     const location = response.headers.get('location');
