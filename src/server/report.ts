@@ -57,7 +57,7 @@ function criterionHeight(doc: PDFKit.PDFDocument, criterion: CriterionResult): n
   return textHeight(doc, `${criterion.field} - ${criterion.dimension}`, 'Helvetica-Bold', 8.5, 465)
     + textHeight(doc, criterion.question, 'Helvetica', 8, 465)
     + textHeight(doc, detail, 'Helvetica', 8, 465)
-    + 8;
+    + 6;
 }
 
 function writeCriterion(doc: PDFKit.PDFDocument, criterion: CriterionResult): void {
@@ -76,7 +76,7 @@ function writeCriterion(doc: PDFKit.PDFDocument, criterion: CriterionResult): vo
   doc.font('Helvetica').fontSize(8).fillColor('#475569')
     .text(criterion.question, 70, y + titleHeight, { width: 465, lineGap: 0 })
     .text(detail, 70, y + titleHeight + questionHeight, { width: 465, lineGap: 0 });
-  resetCursor(doc, y + titleHeight + questionHeight + detailHeight + 8);
+  resetCursor(doc, y + titleHeight + questionHeight + detailHeight + 6);
 }
 
 export function createPdfReport(input: SessionEvaluation): Promise<Buffer> {
