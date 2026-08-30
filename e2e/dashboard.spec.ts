@@ -64,3 +64,21 @@ test('usa a grade geográfica quando os tiles externos falham', async ({ page })
   await expect(page.locator('#tile-status')).toContainText('grade geográfica');
   await expect(page.locator('#map canvas')).toHaveCount(1);
 });
+
+test('mantém o mapa abaixo do cabeçalho fixo durante a rolagem', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#file-input').setInputFiles(path.join(fixturesRoot, 'darwin-core.tsv'));
+  await expect(page.locator('#session-status')).toContainText('1/3', { timeout: 30_000 });
+  await page.getByRole('button', { name: /Explorar/ }).click();
+
+  await page.locator('#map').evaluate((map) => {
+    window.scrollTo(0, map.getBoundingClientRect().top + window.scrollY);
+  });
+
+  const topElement = await page.locator('.topbar').evaluate((topbar) => {
+    const bounds = topbar.getBoundingClientRect();
+    const element = document.elementFromPoint(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
+    return element === topbar || Boolean(element && topbar.contains(element));
+  });
+  expect(topElement).toBe(true);
+});

@@ -507,6 +507,9 @@ tbody tr:hover { background: color-mix(in srgb, var(--accent-soft) 24%, transpar
 .explore-toolbar > span { align-self: center; color: var(--ink-soft); font-size: 11px; }
 .map-card { min-width: 0; }
 #map {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
   height: 330px;
   overflow: hidden;
   border: 1px solid var(--line);
