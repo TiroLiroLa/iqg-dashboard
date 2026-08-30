@@ -1,0 +1,46 @@
+{
+  "id": "urn:wmo:md:br:demo-observation",
+  "type": "Feature",
+  "conformsTo": ["https://schemas.wmo.int/wcmp/2"],
+  "language": "en",
+  "time": {
+    "interval": ["2025-01-01", "2025-01-31"]
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-49.2733, -25.4284]
+  },
+  "properties": {
+    "type": "dataset",
+    "title": "Synthetic weather observation",
+    "description": "Small deterministic fixture used by the automated test suite.",
+    "created": "2025-01-01T00:00:00Z",
+    "pubtime": "2025-02-01T00:00:00Z",
+    "themes": [
+      {
+        "scheme": "https://codes.wmo.int/wis/topic-hierarchy",
+        "concepts": [{ "id": "weather", "title": "Weather" }]
+      }
+    ],
+    "contacts": [
+      {
+        "organization": "Example Meteorological Service",
+        "roles": ["originator"]
+      }
+    ],
+    "license": "CC-BY-4.0",
+    "accessConstraints": "unrestricted",
+    "wmo:dataPolicy": "core",
+    "wmo:topicHierarchy": "weather"
+  },
+  "links": [
+    {
+      "rel": "data",
+      "href": "https://example.invalid/weather/demo.json"
+    },
+    {
+      "rel": "license",
+      "href": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  ]
+}

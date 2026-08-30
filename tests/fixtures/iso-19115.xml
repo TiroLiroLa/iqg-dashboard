@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MD_Metadata>
+  <dateStamp><Date>2025-01-20</Date></dateStamp>
+  <language>pt-BR</language>
+  <characterSet>UTF-8</characterSet>
+  <contact>
+    <CI_ResponsibleParty>
+      <organisationName>Instituição de exemplo</organisationName>
+      <role><CI_RoleCode>custodian</CI_RoleCode></role>
+    </CI_ResponsibleParty>
+  </contact>
+  <referenceSystemIdentifier>
+    <code>EPSG:4326</code>
+  </referenceSystemIdentifier>
+  <identificationInfo>
+    <MD_DataIdentification>
+      <citation>
+        <CI_Citation>
+          <title>Conjunto geoespacial sintético</title>
+          <date>
+            <CI_Date>
+              <date><Date>2025-01-01</Date></date>
+              <dateType><CI_DateTypeCode>creation</CI_DateTypeCode></dateType>
+            </CI_Date>
+            <CI_Date>
+              <date><Date>2025-01-15</Date></date>
+              <dateType><CI_DateTypeCode>revision</CI_DateTypeCode></dateType>
+            </CI_Date>
+          </date>
+        </CI_Citation>
+      </citation>
+      <abstract>Fixture sintética determinística para testes automatizados.</abstract>
+      <purpose>Validar o analisador ISO 19115 sem arquivos externos.</purpose>
+      <topicCategory><MD_TopicCategoryCode>environment</MD_TopicCategoryCode></topicCategory>
+      <spatialResolution><distance>1000</distance></spatialResolution>
+      <resourceConstraints><MD_LegalConstraints>CC-BY-4.0</MD_LegalConstraints></resourceConstraints>
+      <resourceConstraints><MD_SecurityConstraints>unclassified</MD_SecurityConstraints></resourceConstraints>
+      <maintenanceAndUpdateFrequency>annually</maintenanceAndUpdateFrequency>
+      <extent>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-50</westBoundLongitude>
+          <eastBoundLongitude>-48</eastBoundLongitude>
+          <southBoundLatitude>-26</southBoundLatitude>
+          <northBoundLatitude>-24</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+      </extent>
+    </MD_DataIdentification>
+  </identificationInfo>
+  <dataQualityInfo>
+    <lineage><statement>Gerado exclusivamente para validação automatizada.</statement></lineage>
+  </dataQualityInfo>
+  <distributionInfo>
+    <distributionFormat><MD_Format><name>GeoJSON</name></MD_Format></distributionFormat>
+    <transferOptions><URL>https://example.invalid/geospatial/demo.geojson</URL></transferOptions>
+  </distributionInfo>
+</MD_Metadata>

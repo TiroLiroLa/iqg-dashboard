@@ -1,14 +1,14 @@
 import path from 'node:path';
 import { expect, test } from '@playwright/test';
 
-const icRoot = path.resolve(process.cwd(), '..', '..', 'IC', 'padroes_para_teste');
+const fixturesRoot = path.resolve(process.cwd(), 'tests', 'fixtures');
 
 test('carrega os três padrões e publica o IQG', async ({ page }) => {
   await page.goto('/');
   await page.locator('#file-input').setInputFiles([
-    path.join(icRoot, 'occurrence.txt'),
-    path.join(icRoot, 'metadados_wcmp2_inmet.json'),
-    path.join(icRoot, 'dados_iso.xml')
+    path.join(fixturesRoot, 'darwin-core.tsv'),
+    path.join(fixturesRoot, 'wcmp-2.json'),
+    path.join(fixturesRoot, 'iso-19115.xml')
   ]);
   await expect(page.locator('#session-status')).toContainText('IQG', { timeout: 30_000 });
   await page.getByRole('button', { name: /Visão Geral/ }).click();

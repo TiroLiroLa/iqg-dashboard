@@ -7,7 +7,7 @@ import { analyzeFile } from '../src/server/analyzers/index.js';
 import { buildSession } from '../src/shared/scoring.js';
 import type { AnalysisResult, StandardId } from '../src/shared/types.js';
 
-const icRoot = path.resolve(process.cwd(), '..', '..', 'IC');
+const fixturesRoot = path.resolve(process.cwd(), 'tests', 'fixtures');
 
 describe('API', () => {
   it('responde ao health check', async () => {
@@ -19,7 +19,7 @@ describe('API', () => {
   it('analisa upload WCMP', async () => {
     const response = await request(app).post('/api/analyses')
       .field('coverageThreshold', '.8')
-      .attach('file', path.join(icRoot, 'padroes_para_teste', 'metadados_wcmp2_inmet.json'));
+      .attach('file', path.join(fixturesRoot, 'wcmp-2.json'));
     expect(response.status).toBe(201);
     expect(response.body.standard).toBe('wcmp-2');
     expect(response.body.criteria).toHaveLength(17);
@@ -41,9 +41,9 @@ describe('API', () => {
 
   it('gera um PDF paginado para uma sessão completa', async () => {
     const files: Array<[StandardId, string]> = [
-      ['darwin-core', path.join(icRoot, 'padroes_para_teste', 'occurrence.txt')],
-      ['wcmp-2', path.join(icRoot, 'padroes_para_teste', 'metadados_wcmp2_inmet.json')],
-      ['iso-19115', path.join(icRoot, 'padroes_para_teste', 'dados_iso.xml')]
+      ['darwin-core', path.join(fixturesRoot, 'darwin-core.tsv')],
+      ['wcmp-2', path.join(fixturesRoot, 'wcmp-2.json')],
+      ['iso-19115', path.join(fixturesRoot, 'iso-19115.xml')]
     ];
     const analyses: Partial<Record<StandardId, AnalysisResult>> = {};
     for (const [standard, filePath] of files) {

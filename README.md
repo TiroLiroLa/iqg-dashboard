@@ -1,6 +1,6 @@
 # IQG Dashboard
 
-Aplicação full-stack para avaliar a qualidade de metadados geoespaciais nos padrões Darwin Core, WCMP 2.0 e ISO 19115/MI_Metadata. O projeto implementa os 61 critérios da matriz acadêmica, sem depender da pasta `IC` durante a execução.
+Aplicação full-stack independente para avaliar a qualidade de metadados geoespaciais nos padrões Darwin Core, WCMP 2.0 e ISO 19115/MI_Metadata. O projeto implementa os 61 critérios da matriz acadêmica e inclui tudo o que é necessário para desenvolvimento e validação local.
 
 ## Requisitos
 
@@ -34,7 +34,7 @@ pnpm test
 pnpm test:e2e
 ```
 
-Os testes de integração usam os arquivos de referência da pasta irmã `IC`. Para executar a suíte completa, preserve a disposição original das pastas `IC/IC` e `IC/aplicativo/aplicativo`.
+As fixtures sintéticas usadas pelos testes ficam versionadas em `tests/fixtures/`. Um clone isolado do repositório é suficiente para instalar dependências, executar a aplicação e rodar toda a suíte de testes.
 
 ## Formatos aceitos
 
