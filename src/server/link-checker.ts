@@ -49,10 +49,21 @@ async function request(url: URL, redirects = 0): Promise<Response> {
   return response;
 }
 
+function inaturalistJsonUrl(url: URL): URL | undefined {
+  const hostname = url.hostname.toLowerCase();
+  if (!['inaturalist.org', 'www.inaturalist.org'].includes(hostname)) return undefined;
+  if (!/^\/observations\/\d+\/?$/.test(url.pathname)) return undefined;
+  const jsonUrl = new URL(url);
+  jsonUrl.pathname = `${url.pathname.replace(/\/$/, '')}.json`;
+  return jsonUrl;
+}
+
 export async function checkLink(rawUrl: string): Promise<LinkDiagnostic> {
   try {
     const url = new URL(rawUrl);
-    const response = await request(url);
+    let response = await request(url);
+    const jsonUrl = response.status === 403 ? inaturalistJsonUrl(url) : undefined;
+    if (jsonUrl) response = await request(jsonUrl);
     return { url: rawUrl, ok: response.ok, status: response.status, message: response.ok ? 'Recurso acessível.' : `Resposta HTTP ${response.status}.` };
   } catch (error) {
     return { url: rawUrl, ok: false, message: error instanceof Error ? error.message : 'Falha na consulta.' };
