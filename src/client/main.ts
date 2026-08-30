@@ -36,6 +36,8 @@ let temporalChart: Chart | null = null;
 let themesChart: Chart | null = null;
 let map: L.Map | null = null;
 let mapLayer: L.LayerGroup | null = null;
+let tileLayer: L.TileLayer | null = null;
+let tileErrors = 0;
 let toastTimer = 0;
 
 function showToast(message: string, error = false): void {
@@ -261,7 +263,28 @@ function chartOptions(radial: boolean): object {
 function setupMap(): void {
   if (map) return;
   map = L.map('map', { preferCanvas: true }).setView([-15, -52], 3);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+  tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  });
+  tileLayer.on('loading', () => { tileErrors = 0; });
+  tileLayer.on('tileerror', (event: L.TileErrorEvent) => {
+    tileErrors += 1;
+    event.tile.style.display = 'none';
+    if (tileErrors < 2) return;
+    byId<HTMLElement>('map').classList.add('tiles-unavailable');
+    const status = byId<HTMLParagraphElement>('tile-status');
+    status.hidden = false;
+    status.textContent = 'Mapa-base indisponível. Exibindo grade geográfica; os dados analisados continuam visíveis.';
+  });
+  tileLayer.on('load', () => {
+    if (tileErrors > 0) return;
+    byId<HTMLElement>('map').classList.remove('tiles-unavailable');
+    const status = byId<HTMLParagraphElement>('tile-status');
+    status.hidden = true;
+    status.textContent = '';
+  });
+  tileLayer.addTo(map);
   mapLayer = L.layerGroup().addTo(map);
 }
 

@@ -506,7 +506,18 @@ tbody tr:hover { background: color-mix(in srgb, var(--accent-soft) 24%, transpar
 .explore-toolbar { display: grid; grid-template-columns: minmax(180px, 0.35fr) auto minmax(220px, 1fr); align-items: end; gap: 12px; margin-bottom: 14px; padding: 14px; box-shadow: none; }
 .explore-toolbar > span { align-self: center; color: var(--ink-soft); font-size: 11px; }
 .map-card { min-width: 0; }
-#map { height: 330px; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--canvas-subtle); }
+#map {
+  height: 330px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background-color: var(--canvas-subtle);
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+#map.tiles-unavailable .leaflet-tile-pane { display: none; }
+.map-status { margin: 10px 0 0; color: var(--warning); font-size: 11px; line-height: 1.5; }
+.map-status[hidden] { display: none; }
 .diagnostics { margin-top: 14px; }
 .diagnostics > p { margin: 0; color: var(--ink-soft); font-size: 11px; }
 .diagnostic-row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 10.5px; overflow-wrap: anywhere; }

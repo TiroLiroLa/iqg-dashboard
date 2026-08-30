@@ -1,0 +1,9 @@
+.git/
+.github/
+coverage/
+dist-server/
+e2e/
+playwright-report/
+test-results/
+tests/
+*.log

@@ -22,3 +22,18 @@ test('layout móvel mantém a navegação acessível', async ({ page }) => {
   await expect(page.getByRole('navigation')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Carregar metadados' })).toBeVisible();
 });
+
+test('usa a grade geográfica quando os tiles externos falham', async ({ page }) => {
+  await page.route('https://tile.openstreetmap.org/**', (route) => route.fulfill({
+    status: 403,
+    contentType: 'text/plain',
+    body: 'blocked'
+  }));
+  await page.goto('/');
+  await page.locator('#file-input').setInputFiles(path.join(fixturesRoot, 'darwin-core.tsv'));
+  await expect(page.locator('#session-status')).toContainText('1/3', { timeout: 30_000 });
+  await page.getByRole('button', { name: /Explorar/ }).click();
+  await expect(page.locator('#tile-status')).toBeVisible();
+  await expect(page.locator('#tile-status')).toContainText('grade geográfica');
+  await expect(page.locator('#map canvas')).toHaveCount(1);
+});

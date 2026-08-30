@@ -14,6 +14,15 @@ describe('API', () => {
     const response = await request(app).get('/api/health');
     expect(response.status).toBe(200);
     expect(response.body.status).toBe('ok');
+    expect(response.headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
+    expect(response.headers['content-security-policy']).toContain('https://tile.openstreetmap.org');
+    expect(response.headers['x-powered-by']).toBeUndefined();
+  });
+
+  it('responde com erro padronizado para endpoints inexistentes', async () => {
+    const response = await request(app).get('/api/inexistente');
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: { code: 'NOT_FOUND', message: 'Endpoint não encontrado.' } });
   });
 
   it('analisa upload WCMP', async () => {

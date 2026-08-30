@@ -1,5 +1,5 @@
 import path from 'node:path';
-import express, { type ErrorRequestHandler } from 'express';
+import express, { type ErrorRequestHandler, type NextFunction, type Request, type Response } from 'express';
 import helmet from 'helmet';
 import multer from 'multer';
 import { z } from 'zod';
@@ -27,11 +27,14 @@ function apiError(code: string, message: string, details?: string[]): ApiErrorPa
 
 export const app = express();
 
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
 app.use(helmet({
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", 'data:', 'https://*.tile.openstreetmap.org'],
+      imgSrc: ["'self'", 'data:', 'https://tile.openstreetmap.org', 'https://*.tile.openstreetmap.org'],
       connectSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"]
     }
@@ -39,9 +42,9 @@ app.use(helmet({
 }));
 app.use(express.json({ limit: '5mb' }));
 
-app.get('/api/health', (_request, response) => response.json({ status: 'ok', service: 'iqg-dashboard' }));
+app.get('/api/health', (_request: Request, response: Response) => response.json({ status: 'ok', service: 'iqg-dashboard' }));
 
-app.post('/api/analyses', upload.single('file'), (request, response) => {
+app.post('/api/analyses', upload.single('file'), (request: Request, response: Response) => {
   if (!request.file) return response.status(400).json(apiError('FILE_REQUIRED', 'Selecione um arquivo para análise.'));
   const threshold = Number(request.body.coverageThreshold ?? 0.8);
   if (!Number.isFinite(threshold) || threshold < MIN_COVERAGE_THRESHOLD || threshold > MAX_COVERAGE_THRESHOLD) {
@@ -55,7 +58,7 @@ app.post('/api/analyses', upload.single('file'), (request, response) => {
   }
 });
 
-app.post('/api/reports/pdf', async (request, response) => {
+app.post('/api/reports/pdf', async (request: Request, response: Response) => {
   const input = request.body as SessionEvaluation;
   if (!input || typeof input !== 'object' || !input.id || !input.analyses || !Number.isFinite(input.coverageThreshold)) {
     return response.status(400).json(apiError('INVALID_SESSION', 'Sessão de avaliação inválida.'));
@@ -66,19 +69,20 @@ app.post('/api/reports/pdf', async (request, response) => {
   return response.send(buffer);
 });
 
-app.post('/api/link-checks', async (request, response) => {
+app.post('/api/link-checks', async (request: Request, response: Response) => {
   const parsed = linksSchema.safeParse(request.body);
   if (!parsed.success) return response.status(400).json(apiError('INVALID_URLS', 'Forneça até 20 URLs HTTP(S) válidas.'));
-  const diagnostics = [];
-  for (const url of parsed.data.urls) diagnostics.push(await checkLink(url));
+  const diagnostics = await Promise.all(parsed.data.urls.map((url) => checkLink(url)));
   return response.json({ diagnostics });
 });
 
+app.use('/api', (_request: Request, response: Response) => response.status(404).json(apiError('NOT_FOUND', 'Endpoint não encontrado.')));
+
 const distPath = path.resolve(process.cwd(), 'dist');
 app.use(express.static(distPath));
-app.get(/^(?!\/api).*/, (_request, response) => response.sendFile(path.join(distPath, 'index.html')));
+app.get(/^(?!\/api).*/, (_request: Request, response: Response) => response.sendFile(path.join(distPath, 'index.html')));
 
-const errorHandler: ErrorRequestHandler = (error, _request, response, _next) => {
+const errorHandler: ErrorRequestHandler = (error: unknown, _request: Request, response: Response, _next: NextFunction) => {
   if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
     response.status(413).json(apiError('FILE_TOO_LARGE', 'O arquivo excede o limite de 20 MB.'));
     return;
