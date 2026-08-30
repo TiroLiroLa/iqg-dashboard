@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Avaliação técnica da qualidade de metadados geoespaciais nos padrões Darwin Core, WCMP 2.0 e ISO 19115">
+  <meta name="theme-color" content="#f4f7f6">
+  <title>IQG | Qualidade de Metadados</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <button class="brand" data-page-target="upload" aria-label="Ir para upload">
+        <span class="brand-mark" aria-hidden="true">IQG</span>
+        <span class="brand-copy"><strong>Índice de Qualidade</strong><small>Metadados geoespaciais</small></span>
+      </button>
+      <nav aria-label="Navegação principal">
+        <span class="nav-label">Avaliação</span>
+        <button class="nav-item active" data-page-target="upload"><span>Upload</span></button>
+        <button class="nav-item" data-page-target="overview"><span>Visão Geral</span><b id="nav-iqg">-</b></button>
+        <span class="nav-label">Resultados</span>
+        <button class="nav-item" data-page-target="dimensions"><span>Por Dimensão</span><b>8</b></button>
+        <button class="nav-item" data-page-target="standards"><span>Por Padrão</span><b>3</b></button>
+        <button class="nav-item" data-page-target="criteria"><span>Critérios</span><b>61</b></button>
+        <button class="nav-item" data-page-target="explore"><span>Explorar</span></button>
+      </nav>
+      <div class="sidebar-footer">
+        <span>Pesquisa aplicada</span>
+        <strong>IC / UEPG</strong>
+        <small>Metadados agrometeorológicos</small>
+      </div>
+    </aside>
+
+    <main class="content" id="main-content">
+      <header class="topbar">
+        <div class="session-copy"><span>Sessão atual</span><strong id="session-status">Aguardando arquivos</strong></div>
+        <div class="top-actions">
+          <button class="button secondary" id="export-json" disabled>Exportar JSON</button>
+          <button class="button primary" id="export-pdf" disabled>Exportar PDF</button>
+        </div>
+      </header>
+
+      <section class="page active" data-page="upload">
+        <div class="page-heading page-heading-featured">
+          <span class="page-kicker">Nova avaliação</span>
+          <h1>Carregar metadados</h1>
+          <p>Envie um arquivo de cada padrão. O conteúdo determina o formato, não apenas a extensão.</p>
+        </div>
+        <div class="upload-workspace">
+          <div class="upload-zone" id="upload-zone" tabindex="0" role="button" aria-label="Selecionar arquivos">
+            <input id="file-input" type="file" accept=".txt,.tsv,.json,.xml" multiple hidden>
+            <span class="upload-symbol" aria-hidden="true">+</span>
+            <div><h2>Adicione até três arquivos</h2><p>Arraste para esta área ou clique para selecionar. Limite de 20 MB por arquivo.</p></div>
+            <div class="format-list" aria-label="Formatos aceitos">
+              <span><strong>Darwin Core</strong> TSV</span>
+              <span><strong>WCMP 2</strong> JSON</span>
+              <span><strong>ISO 19115</strong> XML</span>
+            </div>
+          </div>
+          <aside class="coverage-panel" aria-labelledby="coverage-title">
+            <div><span class="panel-label">Parâmetro da análise</span><h2 id="coverage-title">Cobertura mínima</h2><p>Um campo Darwin Core é conforme quando esta parcela dos registros possui valor válido.</p></div>
+            <output id="threshold-label" for="coverage-threshold">80%</output>
+            <input id="coverage-threshold" type="range" min="51" max="100" value="80" step="1" aria-label="Cobertura mínima Darwin Core">
+            <div class="range-scale"><span>51%</span><span>100%</span></div>
+          </aside>
+        </div>
+        <div class="slot-grid" id="upload-slots" aria-live="polite"></div>
+        <div class="section-heading"><div><h2>Histórico recente</h2><p>Resultados permanecem apenas neste navegador.</p></div><button class="button ghost" id="clear-history">Limpar histórico</button></div>
+        <div class="history-list surface" id="history-list"></div>
+      </section>
+
+      <section class="page" data-page="overview">
+        <div class="page-heading"><h1>Visão geral da qualidade</h1><p>O IQG final é publicado somente quando os três padrões estão presentes.</p></div>
+        <div class="stats-grid" id="summary-stats"></div>
+        <div class="dashboard-grid overview-grid">
+          <article class="surface gauge-card"><div class="card-title"><h2>Índice de Qualidade Geral</h2></div><div class="gauge" id="iqg-gauge"><div><strong id="iqg-value">-</strong><span id="iqg-class">Incompleto</span></div></div><p id="iqg-help">Carregue os três padrões para calcular o IQG.</p></article>
+          <article class="surface chart-panel"><div class="card-title"><h2>Dimensões por padrão</h2></div><div class="chart-wrap"><canvas id="radar-chart"></canvas></div></article>
+        </div>
+        <div class="standard-grid" id="overview-standards"></div>
+        <article class="surface chart-panel"><div class="card-title"><h2>Critérios conformes e não conformes</h2></div><div class="chart-wrap wide"><canvas id="criteria-chart"></canvas></div></article>
+      </section>
+
+      <section class="page" data-page="dimensions">
+        <div class="page-heading"><h1>Avaliação por dimensão</h1><p>Notas calculadas dentro de cada padrão, respeitando os pesos definidos na pesquisa.</p></div>
+        <div class="dimension-grid" id="dimension-grid"></div>
+      </section>
+
+      <section class="page" data-page="standards">
+        <div class="page-heading"><h1>Avaliação por padrão</h1><p>Detalhamento das notas e contribuições de cada dimensão.</p></div>
+        <div id="standards-detail"></div>
+      </section>
+
+      <section class="page" data-page="criteria">
+        <div class="page-heading"><h1>Critérios detalhados</h1><p>Cada resultado inclui cobertura, localização e evidências extraídas do arquivo.</p></div>
+        <div class="filter-bar surface">
+          <label><span>Padrão</span><select id="filter-standard"><option value="">Todos os padrões</option></select></label>
+          <label><span>Dimensão</span><select id="filter-dimension"><option value="">Todas as dimensões</option></select></label>
+          <label><span>Resultado</span><select id="filter-result"><option value="">Todos os resultados</option><option value="pass">Conformes</option><option value="fail">Não conformes</option></select></label>
+          <label class="search-field"><span>Busca</span><input id="criteria-search" type="search" placeholder="Campo, pergunta ou evidência"></label>
+        </div>
+        <p class="table-count" id="criteria-count">Nenhum critério avaliado.</p>
+        <div class="table-shell"><table><thead><tr><th>Padrão</th><th>Dimensão</th><th>Campo</th><th>Critério</th><th>Cobertura</th><th>Resultado</th><th>Evidência</th></tr></thead><tbody id="criteria-body"></tbody></table></div>
+      </section>
+
+      <section class="page" data-page="explore">
+        <div class="page-heading"><h1>Exploração geoespacial e temática</h1><p>Selecione um padrão carregado para investigar sua distribuição.</p></div>
+        <div class="explore-toolbar surface"><label><span>Padrão</span><select id="explore-standard"></select></label><button class="button secondary" id="check-links">Verificar links</button><span id="sampling-note"></span></div>
+        <div class="dashboard-grid explore-grid"><article class="surface map-card"><div class="card-title"><h2>Mapa</h2></div><div id="map" aria-label="Mapa dos metadados"></div></article><article class="surface chart-panel"><div class="card-title"><h2>Distribuição temporal</h2></div><div class="chart-wrap"><canvas id="temporal-chart"></canvas></div></article></div>
+        <article class="surface chart-panel"><div class="card-title"><h2>Temas principais</h2></div><div class="chart-wrap wide"><canvas id="themes-chart"></canvas></div></article>
+        <div class="surface diagnostics" id="link-diagnostics"><p>O diagnóstico online é opcional e não altera o IQG.</p></div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="/src/client/main.ts"></script>
+</body>
+</html>

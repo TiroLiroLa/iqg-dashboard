@@ -1,0 +1,63 @@
+# IQG Dashboard
+
+Aplicação full-stack para avaliar a qualidade de metadados geoespaciais nos padrões Darwin Core, WCMP 2.0 e ISO 19115/MI_Metadata. O projeto implementa os 61 critérios da matriz acadêmica, sem depender da pasta `IC` durante a execução.
+
+## Requisitos
+
+- Node.js 22.12 ou superior
+- pnpm 10 (recomendado via Corepack)
+
+## Execução local
+
+```bash
+corepack enable
+pnpm install
+pnpm dev
+```
+
+O frontend será aberto em `http://localhost:5173` e encaminhará as chamadas `/api` ao Express em `http://localhost:3000`.
+
+Para simular a implantação:
+
+```bash
+pnpm build
+pnpm start
+```
+
+Nesse modo, frontend e API ficam disponíveis em `http://localhost:3000`.
+
+## Testes
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm test:e2e
+```
+
+Os testes de integração usam os arquivos de referência da pasta irmã `IC`. Para executar a suíte completa, preserve a disposição original das pastas `IC/IC` e `IC/aplicativo/aplicativo`.
+
+## Formatos aceitos
+
+- Darwin Core: texto tabular TSV com extensão `.txt` ou `.tsv` e cabeçalhos reconhecidos.
+- WCMP 2.0: GeoJSON `Feature` em `.json` ou `.geojson`, com declaração `conformsTo` da família WCMP 2.
+- ISO 19115: XML com raiz `MD_Metadata` ou `MI_Metadata`, independentemente do prefixo de namespace.
+
+O upload aceita até 20 MB por arquivo. Os arquivos são analisados somente em memória e não são armazenados pelo servidor. O histórico local guarda apenas resultados, nomes, tamanhos, limiar e datas — nunca o conteúdo original.
+
+## Regras de avaliação
+
+O limiar de cobertura Darwin Core pode variar de 51% a 100% e começa em 80%. As dimensões recebem pesos de 20%, 20%, 15%, 15%, 10%, 10%, 5% e 5%; o IQG completo usa Darwin Core 20%, WCMP 40% e ISO 19115 40%.
+
+- IQG maior ou igual a 85: **Confiável**
+- IQG entre 70 e 84,99: **Aceitável**
+- IQG abaixo de 70: **Perigoso**
+
+O IQG só é publicado quando a sessão contém um resultado válido de cada padrão. O diagnóstico opcional de links e a disponibilidade dos tiles do mapa nunca alteram a nota.
+
+## Estrutura
+
+- `src/shared`: contratos, critérios versionados, pesos e fórmulas.
+- `src/server`: API Express, parsers, validadores, diagnóstico de links e relatório PDF.
+- `src/client`: estado da sessão, interface, gráficos, mapa, histórico e downloads.
+- `tests`: testes unitários, de API e integração com amostras reais.
+- `e2e`: fluxos de interface com Playwright.
