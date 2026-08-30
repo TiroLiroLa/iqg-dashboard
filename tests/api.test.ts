@@ -62,6 +62,10 @@ describe('API', () => {
     const response = await request(app).post('/api/reports/pdf').send(session).buffer(true);
     expect(response.status).toBe(200);
     expect(response.headers['content-type']).toMatch(/application\/pdf/);
-    expect(Buffer.from(response.body).subarray(0, 4).toString()).toBe('%PDF');
+    const pdf = Buffer.from(response.body);
+    expect(pdf.subarray(0, 4).toString()).toBe('%PDF');
+    const pageCount = pdf.toString('latin1').match(/\/Type \/Page\b/g)?.length ?? 0;
+    expect(pageCount).toBeGreaterThan(1);
+    expect(pageCount).toBeLessThanOrEqual(7);
   });
 });
